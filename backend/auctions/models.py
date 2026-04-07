@@ -36,6 +36,7 @@ class Auction(SafeDeleteModel):
     created_at = models.DateTimeField(auto_now_add=True)
     date_start = models.DateTimeField(blank=False)
     date_end = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name_plural = "Auctions"
