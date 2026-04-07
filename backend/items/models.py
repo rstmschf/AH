@@ -20,7 +20,7 @@ class Item(SafeDeleteModel):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        related_name="won_items",
+        related_name="items_won",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
