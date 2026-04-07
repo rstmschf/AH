@@ -18,6 +18,16 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "drf_spectacular",
+    "corsheaders",
+    "safedelete",
+    "djmoney",
+    "users",
+    "auctions",
+    "items",
+    "bids",
+
 ]
 
 MIDDLEWARE = [
@@ -93,3 +103,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 
 STATIC_URL = "static/"
+
+# Currency whitelist
+
+CURRENCIES = ("USD", "EUR", "GBP", "JPY", "CNY")

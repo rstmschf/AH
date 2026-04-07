@@ -3,6 +3,7 @@ from django.conf import settings
 from safedelete.models import SafeDeleteModel
 from safedelete.models import SOFT_DELETE_CASCADE
 from .services import generate_invite_code
+from djmoney.models.fields import CurrencyField
 
 
 class Auction(SafeDeleteModel):
@@ -23,6 +24,7 @@ class Auction(SafeDeleteModel):
         verbose_name="Auction Description",
         help_text="Describe auction's items, reasons, goals.",
     )
+    currency = CurrencyField(default="USD")
     auctioneer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
