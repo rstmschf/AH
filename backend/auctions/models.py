@@ -28,8 +28,6 @@ class Auction(SafeDeleteModel):
     auctioneer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        null=True,
-        blank=True,
         related_name="auctions_created",
     )
     invite_code = models.CharField(
