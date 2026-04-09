@@ -26,6 +26,7 @@ class AuctionCreateSerializer(AuctionDateValidationMixin, serializers.ModelSeria
             "currency",
             "date_start",
             "date_end",
+            "is_public"
         )
 
 
@@ -73,7 +74,7 @@ class AuctionDetailSerializer(AuctionDateValidationMixin, serializers.ModelSeria
 
 class AuctionOwnerSerializer(AuctionDetailSerializer):
     class Meta(AuctionDetailSerializer.Meta):
-        fields = AuctionDetailSerializer.Meta.fields + ("invite_code",)
+        fields = AuctionDetailSerializer.Meta.fields + ("invite_code", "is_public")
         read_only_fields = AuctionDetailSerializer.Meta.read_only_fields + (
             "invite_code",
         )

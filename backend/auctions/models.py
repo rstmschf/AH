@@ -33,6 +33,7 @@ class Auction(SafeDeleteModel):
     invite_code = models.CharField(
         max_length=32, unique=True, db_index=True, default=generate_invite_code
     )
+    is_public = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     date_start = models.DateTimeField(blank=False)
     date_end = models.DateTimeField(blank=True, null=True)

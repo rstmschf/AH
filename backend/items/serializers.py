@@ -8,6 +8,12 @@ class ImageCreateSerializer(serializers.ModelSerializer):
         fields = ("image", "is_primary")
 
 
+class ImageUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ItemImage
+        fields = ("id", "image", "is_primary")
+
+
 class ImageShowSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemImage
@@ -39,6 +45,13 @@ class ItemDetailSerializer(serializers.ModelSerializer):
             "images",
             "created_at",
             "won_by",
+        )
+        read_only_fields = (
+            "id",
+            "won_by",
+            "created_at",
+            "current_price",
+            "auction"
         )
 
 
