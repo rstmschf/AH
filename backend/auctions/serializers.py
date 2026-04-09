@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Auction
-from items.serializers import ItemSerializer
+from items.serializers import ItemListSerializer
 
 
 class AuctionDateValidationMixin:
@@ -43,7 +43,7 @@ class AuctionListSerializer(serializers.ModelSerializer):
 
 
 class AuctionDetailSerializer(AuctionDateValidationMixin, serializers.ModelSerializer):
-    items = ItemSerializer(many=True, read_only=True)
+    items = ItemListSerializer(many=True, read_only=True)
     auctioneer = serializers.CharField(source="auctioneer.username", read_only=True)
 
     class Meta:

@@ -31,3 +31,16 @@ class Item(SafeDeleteModel):
     @property
     def is_won(self):
         return self.won_by_id is not None
+
+
+class ItemImage(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="items/%Y/%m/")
+    is_primary = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.is_primary:
+            ItemImage.objects.filter(item=self.item, is_primary=True).exclude(
+                pk=self.pk
+            ).update(is_primary=False)
+        super().save(*args, **kwargs)
