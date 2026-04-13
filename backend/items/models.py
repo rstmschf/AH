@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from safedelete.models import SafeDeleteModel
 from safedelete.models import SOFT_DELETE_CASCADE
+from decimal import Decimal
 
 
 class Item(SafeDeleteModel):
@@ -24,6 +25,7 @@ class Item(SafeDeleteModel):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    bid_step = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("1.00"))
 
     def __str__(self):
         return f"{self.name} ({self.auction.name})"

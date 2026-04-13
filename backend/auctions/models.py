@@ -38,6 +38,11 @@ class Auction(SafeDeleteModel):
     date_start = models.DateTimeField(blank=False)
     date_end = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
+    participants = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through="AuctionParticipant",
+        related_name="participated_auctions",
+    )
 
     class Meta:
         verbose_name_plural = "Auctions"
@@ -46,3 +51,25 @@ class Auction(SafeDeleteModel):
 
     def __str__(self):
         return self.name
+    
+
+class AuctionParticipant(models.Model):
+    participant = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="participant_at",
+    )
+    auction = models.ForeignKey(
+        "auctions.Auction",
+        on_delete=models.CASCADE,
+        related_name="participants"
+    )
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["participant", "auction"],
+                name="unique_participant_per_auction",
+            )
+        ]

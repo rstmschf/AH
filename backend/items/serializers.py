@@ -45,6 +45,7 @@ class ItemDetailSerializer(serializers.ModelSerializer):
             "images",
             "created_at",
             "won_by",
+            "bid_step"
         )
         read_only_fields = (
             "id",
@@ -58,4 +59,4 @@ class ItemDetailSerializer(serializers.ModelSerializer):
 class ItemCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = ("id", "name", "base_price", "description")
+        fields = ("id", "name", "base_price", "description", "bid_step")

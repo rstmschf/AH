@@ -23,7 +23,7 @@ class MeView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         obj = User.objects.prefetch_related(
-            "auctions_created", "items_won", "bids"
+            "auctions_created", "items_won", "bids", "participant_at"
         ).get(pk=self.request.user.pk)
         return obj
 
@@ -34,7 +34,7 @@ class UserProfileView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         queryset = User.objects.prefetch_related(
-            "auctions_created", "items_won", "bids"
+            "auctions_created", "items_won", "bids", "participant_at"
         ).filter(is_deleted=False, is_hidden=False)
         return queryset
 
