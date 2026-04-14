@@ -27,7 +27,7 @@ class BidViewSet(viewsets.ModelViewSet):
         return ctx
 
     def perform_create(self, serializer):
-        item = self.get_serializer_context()["item"]
+        item = serializer.context["item"]
         bid = serializer.save(bidder=self.request.user, item=item)
         item.current_price = bid.bid_amount
         item.save(update_fields=["current_price"])
