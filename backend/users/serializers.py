@@ -54,7 +54,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     auctions_created = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     items_won = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     bids = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    participant_at = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    participated_auctions = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = User
