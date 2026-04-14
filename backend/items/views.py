@@ -12,16 +12,25 @@ from auctions.permissions import IsAuctioneerOrReadOnly
 from auctions.models import Auction
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied
+from django.db.models import Q
 
 
 class ItemViewSet(viewsets.ModelViewSet):
-    queryset = Item.objects.select_related("auction", "won_by").prefetch_related(
-        "images"
-    )
     permission_classes = [permissions.IsAuthenticated, IsAuctioneerOrReadOnly]
 
     def get_queryset(self):
-        return super().get_queryset().filter(auction_id=self.kwargs["auction_pk"])
+        user = self.request.user
+        return (
+            Item.objects.select_related("auction", "won_by")
+            .prefetch_related("images")
+            .filter(auction_id=self.kwargs["auction_pk"])
+            .filter(
+                Q(auction__is_public=True)
+                | Q(auction__auctioneer=user)
+                | Q(auction__participants=user)
+            )
+            .distinct()
+        )
 
     def get_serializer_class(self):
         if self.action == "list":

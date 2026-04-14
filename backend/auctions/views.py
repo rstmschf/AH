@@ -11,11 +11,21 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
+from django.db.models import Q
 
 
 class AuctionViewSet(viewsets.ModelViewSet):
-    queryset = Auction.objects.select_related("auctioneer").prefetch_related("items", "participants")
     permission_classes = [permissions.IsAuthenticated, IsAuctioneerOrReadOnly]
+
+    def get_queryset(self):
+        user = self.request.user
+        return (
+            Auction.objects
+            .select_related("auctioneer")
+            .prefetch_related("items", "participants")
+            .filter(Q(is_public=True) | Q(auctioneer=user) | Q(participants=user))
+            .distinct()
+        )
 
     def get_serializer_class(self):
         if self.action == "list":
