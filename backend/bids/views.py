@@ -13,8 +13,9 @@ class BidViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Bid.objects.select_related("item", "bidder").filter(
-            item_id=self.kwargs["item_pk"]
+        return (
+            Bid.objects.select_related("item", "bidder")
+            .filter(item_id=self.kwargs["item_pk"])
             .filter(
                 Q(item__auction__is_public=True)
                 | Q(item__auction__auctioneer=user)
@@ -39,10 +40,16 @@ class BidViewSet(viewsets.ModelViewSet):
 
     @transaction.atomic
     def perform_create(self, serializer):
-        item = (
+        user = self.request.user
+        item = get_object_or_404(
             Item.objects.select_for_update()
             .select_related("auction")
-            .get(pk=self.kwargs["item_pk"])
+            .filter(
+                Q(auction__is_public=True)
+                | Q(auction__auctioneer=user)
+                | Q(auction__participants=user)
+            ),
+            pk=self.kwargs["item_pk"],
         )
         min_price = (item.current_price or item.base_price) + item.bid_step
         if serializer.validated_data["bid_amount"] < min_price:

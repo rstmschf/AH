@@ -140,6 +140,16 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
 }
 
+# Celery
+
+CELERY_BROKER_URL = env("REDIS_URL", default="redis://localhost:6379/0")
+CELERY_BEAT_SCHEDULE = {
+    "close-expired-auctions": {
+        "task": "auctions.tasks.close_expired_auctions",
+        "schedule": 60.0,
+    },
+}
+
 # Password validation
 
 AUTH_PASSWORD_VALIDATORS = [

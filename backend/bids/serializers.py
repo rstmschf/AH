@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Bid
 from auctions.models import AuctionParticipant
+from django.utils import timezone
 
 
 class BidListAndDetailSerializer(serializers.ModelSerializer):
@@ -27,6 +28,8 @@ class BidCreateSerializer(serializers.ModelSerializer):
     def validate(self, data):
         item = self.context["item"]
         request = self.context.get("request")
+        if item.auction.date_end and item.auction.date_end <= timezone.now():
+            raise serializers.ValidationError("Auction has ended.")
         if request and item.auction.auctioneer_id == request.user.id:
             raise serializers.ValidationError("Cannot bid on your own auction.")
         if item.auction.status != "active":
