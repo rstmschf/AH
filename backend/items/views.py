@@ -49,8 +49,6 @@ class ItemImageViewSet(viewsets.ModelViewSet):
             return ImageCreateSerializer
         if self.action in ("update", "partial_update"):
             return ImageUpdateSerializer
-        if self.action in ("list", "retrieve"):
-            return ImageShowSerializer
         return ImageShowSerializer
 
     def perform_create(self, serializer):

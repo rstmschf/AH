@@ -28,11 +28,14 @@ class AuctionViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
+        ctx = self.get_serializer_context()
         if instance.auctioneer_id == request.user.id:
-            serializer = AuctionOwnerSerializer(instance, context=self.get_serializer_context())
+            serializer_class = AuctionOwnerSerializer
         else:
-            serializer = AuctionDetailSerializer(instance, context=self.get_serializer_context())
+            serializer_class = AuctionDetailSerializer
+        serializer = serializer_class(instance, context=ctx)
         return Response(serializer.data)
+    
         
     def perform_create(self, serializer):
         serializer.save(auctioneer=self.request.user)
