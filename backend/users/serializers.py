@@ -66,5 +66,5 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "auctions_created",
             "items_won",
             "bids",
-            "participant_at"
+            "participated_auctions"
         )
