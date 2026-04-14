@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Bid
+from auctions.models import AuctionParticipant
 
 
 class BidListAndDetailSerializer(serializers.ModelSerializer):
@@ -30,4 +31,8 @@ class BidCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Cannot bid on your own auction.")
         if item.auction.status != "active":
             raise serializers.ValidationError("Auction is not active.")
+        if request and not AuctionParticipant.objects.filter(
+            auction_id=item.auction_id, participant_id=request.user.id
+        ).exists():
+            raise serializers.ValidationError("You are not a participant of this auction.")
         return data
