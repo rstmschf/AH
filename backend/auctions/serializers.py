@@ -26,7 +26,7 @@ class AuctionCreateSerializer(AuctionDateValidationMixin, serializers.ModelSeria
             "currency",
             "date_start",
             "date_end",
-            "is_public"
+            "is_public",
         )
 
 
@@ -73,8 +73,17 @@ class AuctionDetailSerializer(AuctionDateValidationMixin, serializers.ModelSeria
 
 
 class AuctionOwnerSerializer(AuctionDetailSerializer):
+    participants = serializers.SlugRelatedField(
+        many=True, read_only=True, slug_field="username"
+    )
+
     class Meta(AuctionDetailSerializer.Meta):
-        fields = AuctionDetailSerializer.Meta.fields + ("invite_code", "is_public")
+        fields = AuctionDetailSerializer.Meta.fields + (
+            "invite_code",
+            "is_public",
+            "participants",
+        )
         read_only_fields = AuctionDetailSerializer.Meta.read_only_fields + (
             "invite_code",
+            "participants"
         )

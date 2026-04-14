@@ -10,10 +10,11 @@ from .permissions import IsAuctioneerOrReadOnly
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 
 
 class AuctionViewSet(viewsets.ModelViewSet):
-    queryset = Auction.objects.select_related("auctioneer").prefetch_related("items")
+    queryset = Auction.objects.select_related("auctioneer").prefetch_related("items", "participants")
     permission_classes = [permissions.IsAuthenticated, IsAuctioneerOrReadOnly]
 
     def get_serializer_class(self):
@@ -23,15 +24,23 @@ class AuctionViewSet(viewsets.ModelViewSet):
             return AuctionCreateSerializer
         if self.action in ("update", "partial_update"):
             return AuctionOwnerSerializer
-        if self.action == "retrieve":
-            obj = self.get_object()
-            if obj.auctioneer_id == self.request.user.id:
-                return AuctionOwnerSerializer
-            return AuctionDetailSerializer
         return AuctionDetailSerializer
-    
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.auctioneer_id == request.user.id:
+            serializer = AuctionOwnerSerializer(instance, context=self.get_serializer_context())
+        else:
+            serializer = AuctionDetailSerializer(instance, context=self.get_serializer_context())
+        return Response(serializer.data)
+        
     def perform_create(self, serializer):
         serializer.save(auctioneer=self.request.user)
+
+    def get_permissions(self):
+        if self.action in ("join", "leave"):
+            return [permissions.IsAuthenticated()]
+        return super().get_permissions()
 
     @action(detail=False, methods=["post"], url_path="join/(?P<invite_code>[^/.]+)")
     def join(self, request, invite_code=None):
@@ -39,7 +48,7 @@ class AuctionViewSet(viewsets.ModelViewSet):
         AuctionParticipant.objects.get_or_create(
             auction=auction, participant=request.user
         )
-        return Response({"joined": auction.name}, status=200)
+        return Response({"joined": auction.name}, status=HTTP_200_OK)
     
     @action(detail=True, methods=["post"])
     def leave(self, request, pk=None):
@@ -48,5 +57,5 @@ class AuctionViewSet(viewsets.ModelViewSet):
             auction=auction, participant=request.user
         ).delete()
         if not deleted:
-            return Response({"detail": "You are not a participant."}, status=400)
-        return Response({"detail": "Left auction."}, status=200)
+            return Response({"detail": "You are not a participant."}, status=HTTP_404_NOT_FOUND)
+        return Response({"detail": "Left auction."}, status=HTTP_200_OK)
