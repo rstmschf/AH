@@ -110,6 +110,9 @@ REST_FRAMEWORK = {
         "anon": "20/minute",
         "user": "120/minute",
     },
+    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
+    "DEFAULT_VERSION": "v1",
+    "ALLOWED_VERSIONS": ["v1"],
 }
 
 # Spectacular
