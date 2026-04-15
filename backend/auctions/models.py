@@ -62,7 +62,7 @@ class AuctionParticipant(models.Model):
     auction = models.ForeignKey(
         "auctions.Auction",
         on_delete=models.CASCADE,
-        related_name="participants"
+        related_name="participations"
     )
     joined_at = models.DateTimeField(auto_now_add=True)
 
