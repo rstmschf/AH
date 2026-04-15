@@ -10,6 +10,8 @@ env/
 venv/
 # django
 /staticfiles/
+staticfiles/
+**/staticfiles/
 /media/
 # ide
 .vscode/
