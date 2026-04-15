@@ -10,7 +10,7 @@ from .permissions import IsAuctioneerOrReadOnly
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
+from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
 from django.db.models import Q
 
 
@@ -72,3 +72,17 @@ class AuctionViewSet(viewsets.ModelViewSet):
         if not deleted:
             return Response({"detail": "You are not a participant."}, status=HTTP_404_NOT_FOUND)
         return Response({"detail": "Left auction."}, status=HTTP_200_OK)
+    
+    @action(detail=True, methods=["post"])
+    def cancel(self, request, pk=None):
+        auction = self.get_object()
+        if auction.status not in (Auction.Status.PENDING, Auction.Status.ACTIVE):
+            return Response(
+                {"detail": f"Cannot cancel auction in status '{auction.status}'."},
+                status=HTTP_400_BAD_REQUEST,
+            )
+        auction.status = Auction.Status.CANCELED
+        auction.save(update_fields=["status"])
+        return Response({"detail": "Auction canceled."}, status=HTTP_200_OK)
+        
+            
