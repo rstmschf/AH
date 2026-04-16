@@ -32,24 +32,23 @@ class BidViewSet(viewsets.ModelViewSet):
     def get_serializer_context(self):
         ctx = super().get_serializer_context()
         if self.action == "create":
+            user = self.request.user
             ctx["item"] = get_object_or_404(
-                Item.objects.select_related("auction"),
+                Item.objects.select_related("auction").filter(
+                    Q(auction__is_public=True)
+                    | Q(auction__auctioneer=user)
+                    | Q(auction__participants=user)
+                ),
                 pk=self.kwargs["item_pk"],
             )
         return ctx
 
     @transaction.atomic
     def perform_create(self, serializer):
-        user = self.request.user
-        item = get_object_or_404(
+        item = (
             Item.objects.select_for_update()
             .select_related("auction")
-            .filter(
-                Q(auction__is_public=True)
-                | Q(auction__auctioneer=user)
-                | Q(auction__participants=user)
-            ),
-            pk=self.kwargs["item_pk"],
+            .get(pk=self.kwargs["item_pk"])
         )
         min_price = (item.current_price or item.base_price) + item.bid_step
         if serializer.validated_data["bid_amount"] < min_price:

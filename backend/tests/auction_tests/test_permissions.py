@@ -23,9 +23,9 @@ class TestAuctionPermissions:
         assert auction.is_public is True
 
     def test_auctioneer_can_edit_public_auction(
-        self, api_client, public_auction, auction
+        self, api_client, public_auction, auction, auctioneer
     ):
-        api_client.force_authenticate(public_auction)
+        api_client.force_authenticate(auctioneer)
 
         response = api_client.patch(self._url(auction), {"is_public": False})
 

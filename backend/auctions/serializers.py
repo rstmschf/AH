@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Auction
 from items.serializers import ItemListSerializer
+from django.conf import settings
 
 
 class AuctionDateValidationMixin:
@@ -14,6 +15,13 @@ class AuctionDateValidationMixin:
                 {"date_end": "End date must be after start date."}
             )
         return data
+    
+    def validate_currency(self, value):
+        if value not in settings.CURRENCIES:
+            raise serializers.ValidationError(
+                f"Unsupported currency. Allowed: {', '.join(settings.CURRENCIES)}."
+            )
+        return value
 
 
 class AuctionCreateSerializer(AuctionDateValidationMixin, serializers.ModelSerializer):

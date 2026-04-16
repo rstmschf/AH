@@ -33,6 +33,9 @@ class Item(SafeDeleteModel):
     @property
     def is_won(self):
         return self.won_by_id is not None
+    
+    class Meta:
+        ordering = ("-created_at",)
 
 
 class ItemImage(models.Model):

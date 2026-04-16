@@ -56,7 +56,7 @@ class AuctionViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     @action(detail=False, methods=["post"], url_path="join/(?P<invite_code>[^/.]+)")
-    def join(self, request, invite_code=None):
+    def join(self, request, invite_code=None, **kwargs):
         auction = get_object_or_404(Auction, invite_code=invite_code)
         AuctionParticipant.objects.get_or_create(
             auction=auction, participant=request.user
@@ -64,7 +64,7 @@ class AuctionViewSet(viewsets.ModelViewSet):
         return Response({"joined": auction.name}, status=HTTP_200_OK)
     
     @action(detail=True, methods=["post"])
-    def leave(self, request, pk=None):
+    def leave(self, request, pk=None, **kwargs):
         auction = self.get_object()
         deleted, _ = AuctionParticipant.objects.filter(
             auction=auction, participant=request.user
@@ -74,7 +74,7 @@ class AuctionViewSet(viewsets.ModelViewSet):
         return Response({"detail": "Left auction."}, status=HTTP_200_OK)
     
     @action(detail=True, methods=["post"])
-    def cancel(self, request, pk=None):
+    def cancel(self, request, pk=None, **kwargs):
         auction = self.get_object()
         if auction.status not in (Auction.Status.PENDING, Auction.Status.ACTIVE):
             return Response(
