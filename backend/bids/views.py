@@ -6,6 +6,8 @@ from items.models import Item
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 
 class BidViewSet(viewsets.ModelViewSet):
@@ -56,3 +58,18 @@ class BidViewSet(viewsets.ModelViewSet):
         bid = serializer.save(bidder=self.request.user, item=item)
         item.current_price = bid.bid_amount
         item.save(update_fields=["current_price"])
+
+        auction_id = item.auction_id
+        payload = {
+            "type": "new_bid",
+            "item_id": item.id,
+            "amount": str(bid.bid_amount),
+            "bidder": self.request.user.username,
+            "current_price": str(item.current_price),
+        }
+        transaction.on_commit(
+            lambda: async_to_sync(get_channel_layer().group_send)(
+                f"auction_{auction_id}",
+                {"type": "new_bid", "payload": payload},
+            )
+        )
