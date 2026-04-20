@@ -19,7 +19,7 @@ def close_auction(auction_id):
         if auction.status != "active":
             return
         for item in auction.items.all():
-            top = item.bids.order_by("-bid_amount").first()
+            top = item.bids.order_by("-bid_amount", "created_at").first()
             if top:
                 item.won_by_id = top.bidder_id
                 item.save(update_fields=["won_by"])
