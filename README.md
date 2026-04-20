@@ -1,5 +1,7 @@
 # Auction House
 
+![tests](https://github.com/rstmschf/AH/actions/workflows/test.yml/badge.svg)
+
 A REST + WebSocket backend for running timed online auctions. Users create auctions, invite bidders via a one-time code, and place bids in real time. When the end time hits, a scheduled task picks a winner per item.
 
 ## Stack
