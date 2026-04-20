@@ -60,3 +60,6 @@ def auth_client(api_client, user):
 def auctioneer_client(api_client, auctioneer):
     api_client.force_authenticate(user=auctioneer)
     return api_client
+
+
+CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}

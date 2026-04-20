@@ -94,7 +94,7 @@ class TestBidConcurrency:
         t1.start(); t2.start(); t3.start()
         t1.join(); t2.join(); t3.join()
 
-        assert results.count(200) == 4
+        assert results.count(200) == 3
         assert AuctionParticipant.objects.filter(
             participant=joiner, auction=auction
         ).count() == 1
